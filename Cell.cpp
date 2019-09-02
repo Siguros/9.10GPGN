@@ -462,7 +462,7 @@ RealDevice::RealDevice(int x, int y) {
 	PCMavgMinConductance = minConductance;
 	//conductanceRef = maxConductance;
 	conductanceRef = maxConductance-minConductance;
-	ThrConductance = minConductance;
+	ThrConductance = 0.9*maxConductance;
 	if (nonlinearIV) {  // Currently for cross-point array only
 		double Vr_exp = readVoltage;  // XXX: Modify this value to Vr in the reported measurement data (can be different than readVoltage)
 		// Calculation of conductance at on-chip Vr
@@ -500,8 +500,8 @@ RealDevice::RealDevice(int x, int y) {
 	/* Device-to-device weight update variation */
 	NL_LTP =0;	// LTP nonlinearity
 	NL_LTD =5.0;	// LTD nonlinearity
-	NL_LTP_Gp = 1.0;
-	NL_LTP_Gn = 1.0;
+	NL_LTP_Gp = 2.5;
+	NL_LTP_Gn = 2.5;
 	sigmaDtoD = 0;	// Sigma of device-to-device weight update vairation in gaussian distribution
 	gaussian_dist2 = new std::normal_distribution<double>(0, sigmaDtoD);	// Set up mean and stddev for device-to-device weight update vairation
 	paramALTP = getParamA(NL_LTP + (*gaussian_dist2)(localGen)) * maxNumLevelLTP;	// Parameter A for LTP nonlinearity
@@ -572,7 +572,6 @@ void RealDevice::Write(double deltaWeightNormalized) {
 			deltaWeightNormalized = deltaWeightNormalized * 3/2;
 			deltaWeightNormalized = truncate(deltaWeightNormalized, maxNumLevelLTP);
 			numPulse = deltaWeightNormalized * maxNumLevelLTP;
-				numPulse = deltaWeightNormalized * maxNumLevelLTP;
 				if (numPulse > maxNumLevelLTP) {
 					numPulse = maxNumLevelLTP;
 				}
@@ -595,8 +594,7 @@ void RealDevice::Write(double deltaWeightNormalized) {
 			else { //Gn update
 			deltaWeightNormalized = deltaWeightNormalized * 3;
 			deltaWeightNormalized = truncate(deltaWeightNormalized, maxNumLevelLTP);
-			numPulse = deltaWeightNormalized * maxNumLevelLTP;
-				numPulse = -deltaWeightNormalized * maxNumLevelLTP;
+			numPulse = -deltaWeightNormalized * maxNumLevelLTP;
 				if (numPulse > maxNumLevelLTP) {
 					numPulse = maxNumLevelLTP;
 				}
