@@ -93,6 +93,7 @@ public:
 	double RESETPulseWidth;
 	double conductanceGp; // G+ conductacne
 	double conductanceGn; //G- conductance
+	double conductanceGp2;
 	double conductanceGpPrev;
 	double conductanceGnPrev;
 	double conductanceRef; // Refernce conductance for weight update
@@ -102,6 +103,7 @@ public:
 	double PCMavgMinConductance;
 	double ThrConductance;
 	bool SaturationPCM;
+	
 
 };
 
@@ -145,6 +147,7 @@ public:
 	
     /*PCM properties*/
 	bool PCMON;
+	bool Gp2CellMode;
 	int maxRESETLEVEL;
 
 

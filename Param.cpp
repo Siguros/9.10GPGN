@@ -82,7 +82,7 @@ Param::Param() {
 	PrintWeightdist = false;
 	ActDeviceIH = 0.7;
 	ActDeviceHO = 0.7;
-	RandomRefresh = true;
+	RandomRefresh = false;
 	NumRefHiddenLayer = 50;
 	NumRefOutputLayer = 5;
 	mode =Sequential; // Randome Refresh mode Line, Sporadic, Sequential ( Line : 랜덤 라인 진행, Sporadic: 산발적으로 랜덤 진행, Sequential : 연속적 랜덤 진행)
