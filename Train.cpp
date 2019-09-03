@@ -1690,7 +1690,7 @@ void Train(const int numTrain, const int epochs) {
 
 										//ERAESE시 weight 값 0.5
 										/*std::cout << "w: " << weightGp;*/
-										arrayIH->WriteCell(j, k, weight1[j][k]-0.3333, param->maxWeight, param->minWeight, false);
+										arrayIH->WriteCell(j, k, weight1[j][k]-0.33333, param->maxWeight, param->minWeight, false);
 										//arrayIH->ReWriteCell(j, k, weight1[j][k], param->maxWeight, param->minWeight); // regular true: weight update 사용, false: 비례하여 update 
 										//weight1[j][k] = arrayIH->ConductanceToWeight(j, k, param->maxWeight, param->minWeight);
 										/*double w = arrayIH->ConductanceToWeight(j, k, param->maxWeight, param->minWeight);
@@ -1783,7 +1783,7 @@ void Train(const int numTrain, const int epochs) {
 										double conductancePrevGp = static_cast<AnalogNVM*>(arrayHO->cell[0][0])->conductanceGpPrev;
 										double conductancePrevGn = static_cast<AnalogNVM*>(arrayHO->cell[0][0])->conductanceGnPrev;
 
-										arrayHO->WriteCell(j, k, weight2[j][k]-0.3333, param->maxWeight, param->minWeight, false);
+										arrayHO->WriteCell(j, k, weight2[j][k]-0.33333, param->maxWeight, param->minWeight, false);
 										
 										//arrayHO->ReWriteCell(j, k, weight2[j][k], param->maxWeight, param->minWeight); // regular true: weight update 사용, false: 비례하여 update 
 										//weight2[j][k] = arrayHO->ConductanceToWeight(j, k, param->maxWeight, param->minWeight);

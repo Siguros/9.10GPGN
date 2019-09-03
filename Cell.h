@@ -197,13 +197,16 @@ public:
 
 	/*PCM properties*/
 	double xPulseGp;
+	double xPulseGp2;
 	double xPulseGn;
 	double NL_RESET;
 	double paramA_RESET;
 	double paramB_RESET;
 	double NL_LTP_Gp;
+	double NL_LTP_Gp2;
 	double NL_LTP_Gn;
 	double paramA_Gp_LTP;
+	double paramA_Gp2_LTP;
 	double paramA_Gn_LTP;
 	std::mt19937 RandGen;
 	RealDevice(int x, int y);
