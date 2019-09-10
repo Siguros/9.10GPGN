@@ -79,7 +79,7 @@ Param::Param() {
 	clkFreq = 2e9;		// Clock frequency (Hz)
 
 	numImageperRESET = 100;
-	PrintWeightdist = true;
+	PrintWeightdist = false;
 	ActDeviceIH = 0.7;
 	ActDeviceHO = 0.7;
 	RandomRefresh = false;

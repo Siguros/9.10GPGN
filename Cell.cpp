@@ -462,7 +462,7 @@ RealDevice::RealDevice(int x, int y) {
 	PCMavgMinConductance = minConductance;
 	//conductanceRef = maxConductance;
 	conductanceRef = maxConductance-minConductance;
-	ThrConductance = 0.9*maxConductance;
+	ThrConductance = minConductance;
 	if (nonlinearIV) {  // Currently for cross-point array only
 		double Vr_exp = readVoltage;  // XXX: Modify this value to Vr in the reported measurement data (can be different than readVoltage)
 		// Calculation of conductance at on-chip Vr
@@ -499,9 +499,9 @@ RealDevice::RealDevice(int x, int y) {
 	maxRESETLEVEL = 10;
 	/* Device-to-device weight update variation */
 	NL_LTP =0;	// LTP nonlinearity
-	NL_LTD =5.0;	// LTD nonlinearity
+	NL_LTD =5.0;// LTD nonlinearity
 	NL_LTP_Gp = 2.5;
-	NL_LTP_Gp2 = 2.5;
+	NL_LTP_Gp2 =2.5;
 	NL_LTP_Gn = 2.5;
 	sigmaDtoD = 0;	// Sigma of device-to-device weight update vairation in gaussian distribution
 	gaussian_dist2 = new std::normal_distribution<double>(0, sigmaDtoD);	// Set up mean and stddev for device-to-device weight update vairation
@@ -515,8 +515,8 @@ RealDevice::RealDevice(int x, int y) {
 	paramA_RESET = getParamA(NL_RESET + (*gaussian_dist2)(localGen))*maxRESETLEVEL;
 	RandGen.seed(std::time(0));
 	/* Cycle-to-cycle weight update variation */
-	//sigmaCtoC = 0.035 * (maxConductance - minConductance);	// Sigma of cycle-to-cycle weight update vairation: defined as the percentage of conductance range
-	sigmaCtoC = 0;
+	sigmaCtoC = 0.03 * (maxConductance - minConductance);	// Sigma of cycle-to-cycle weight update vairation: defined as the percentage of conductance range
+	//sigmaCtoC = 0;
 	gaussian_dist3 = new std::normal_distribution<double>(0, sigmaCtoC);    // Set up mean and stddev for cycle-to-cycle weight update vairation
 
 	/* Conductance range variation */
@@ -565,8 +565,6 @@ void RealDevice::Write(double deltaWeightNormalized) {
 	double conductanceNew = conductance;	// =conductance if no update
 	double conductanceNewGp = conductanceGp;
 	double conductanceNewGp2 = conductanceGp2;
-	\
-
 	double conductanceNewGn = conductanceGn;
 	if (PCMON) { //PCM	
 	
@@ -750,23 +748,54 @@ void RealDevice::Write(double deltaWeightNormalized) {
 	/* Cycle-to-cycle variation */
 	extern std::mt19937 gen;
 	if (PCMON) {
-		if (sigmaCtoC && numPulse != 0) {
-			if (numPulse > 0) {
-				conductanceNewGp += (*gaussian_dist3)(gen) * sqrt(abs(numPulse));	// Absolute variation
-				if (conductanceNewGp > maxConductance) {
-					conductanceNewGp = maxConductance;
+		if (Gp2CellMode) {
+			if (sigmaCtoC && numPulse != 0) {
+				if (numPulse > 0) { /*Gp cycle to cycle var*/
+					conductanceNewGp += (*gaussian_dist3)(gen) * sqrt(abs(numPulse));	// Absolute variation
+					if (conductanceNewGp > maxConductance) {
+						conductanceNewGp = maxConductance;
+					}
+					else if (conductanceNewGp < minConductance) {
+						conductanceNewGp = minConductance;
+					}
+					conductanceNewGp2 += (*gaussian_dist3)(gen)*sqrt(abs(numPulse));
+					if (conductanceNewGp2 > maxConductance) {
+						conductanceNewGp2 = maxConductance;
+					}
+					else if (conductanceNewGp2 < minConductance) {
+						conductanceNewGp2 = minConductance;
+					}
 				}
-				else if (conductanceNewGp < minConductance) {
-					conductanceNewGp = minConductance;
+				else { /*Gn cycle to cycle var*/
+					conductanceNewGn += (*gaussian_dist3)(gen)*sqrt(abs(numPulse));
+					if (conductanceNewGn > maxConductance) {
+						conductanceNewGn = maxConductance;
+					}
+					else if (conductanceNewGn < minConductance) {
+						conductanceNewGn = minConductance;
+					}
 				}
 			}
-			else {
-				conductanceNewGn += (*gaussian_dist3)(gen)*sqrt(abs(numPulse));
-				if (conductanceNewGn > maxConductance) {
-					conductanceNewGn = maxConductance;
+		}
+		else {
+			if (sigmaCtoC && numPulse != 0) {
+				if (numPulse > 0) {
+					conductanceNewGp += (*gaussian_dist3)(gen) * sqrt(abs(numPulse));	// Absolute variation
+					if (conductanceNewGp > maxConductance) {
+						conductanceNewGp = maxConductance;
+					}
+					else if (conductanceNewGp < minConductance) {
+						conductanceNewGp = minConductance;
+					}
 				}
-				else if (conductanceNewGn < minConductance) {
-					conductanceNewGn = minConductance;
+				else {
+					conductanceNewGn += (*gaussian_dist3)(gen)*sqrt(abs(numPulse));
+					if (conductanceNewGn > maxConductance) {
+						conductanceNewGn = maxConductance;
+					}
+					else if (conductanceNewGn < minConductance) {
+						conductanceNewGn = minConductance;
+					}
 				}
 			}
 		}
